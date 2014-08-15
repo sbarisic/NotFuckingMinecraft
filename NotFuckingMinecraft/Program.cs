@@ -14,6 +14,8 @@ using MsgBoxIcon = System.Windows.Forms.MessageBoxIcon;
 namespace NFM {
 
 	static class Settings {
+		public const string Version = "0.1.0.0";
+
 		public static bool Flatlands = false;
 		public static bool Colored = false;
 		public static bool Wireframe = false;
