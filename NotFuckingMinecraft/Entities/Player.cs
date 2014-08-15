@@ -70,7 +70,7 @@ namespace NFM.Entities {
 				Vector3 S = R.GameWorld.GetBlockPos(-Camera.GetPosition());
 				Vector3 E = R.GameWorld.GetBlockPos(-Camera.GetPosition() + Camera.GetForward() * 20);
 				Vector3[] P = VecMth.Bresenham(S, E);
-				R.GameWorld.SetBlock(P[P.Length - 1], BlockDefs.Stone);
+				R.GameWorld.SetBlock(P[P.Length - 1], BlockDefs.Box);
 			}
 		}
 

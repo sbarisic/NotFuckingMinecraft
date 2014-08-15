@@ -1,4 +1,4 @@
-﻿#define FRAMEBUFFER // Enable screen framebffer
+﻿//#define FRAMEBUFFER // Enable screen framebffer
 
 using NFM.Entities;
 using OpenTK;
@@ -158,8 +158,8 @@ namespace NFM {
 				GL.Clear(CBM);
 				GameWorld.Render();
 
-				/*GL.CullFace(CullFaceMode.Front);
-				GameWorld.RenderTransparent();*/
+				GL.CullFace(CullFaceMode.Front);
+				GameWorld.RenderTransparent();
 				GL.CullFace(CullFaceMode.Back);
 				GameWorld.RenderTransparent();
 #if FRAMEBUFFER

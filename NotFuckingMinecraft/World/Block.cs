@@ -11,6 +11,7 @@ namespace NFM {
 		Water,
 		Sand,
 		Dirt,
+		Box,
 
 		Border
 	}
@@ -59,6 +60,7 @@ namespace NFM {
 		public static BlockDef Water = new BlockDef(BlockID.Water, true);
 		public static BlockDef Sand = new BlockDef(BlockID.Sand, false);
 		public static BlockDef Dirt = new BlockDef(BlockID.Dirt, false);
+		public static BlockDef Box = new BlockDef(BlockID.Box, true);
 	}
 
 	enum BlockFace {

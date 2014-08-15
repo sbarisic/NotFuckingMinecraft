@@ -228,7 +228,7 @@ namespace NFM {
 									GetBlockData(x, y + 1, z, B, BlockFace.Right);
 							}
 
-							float S = 1f - (1f / 6f * Sides * 0.35f);
+							float S = 1f - Sides * 0.095f;
 							for (int i = 0; i < Sides * 4; i++) 
 								Clrs.Add(new Vector3(S, S, S));
 						}
