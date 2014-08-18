@@ -6,7 +6,6 @@ uniform mat4 u_projection;
 uniform mat4 u_view;
 uniform mat4 u_viewrot;
 
-flat in unsigned int Idx;
 in vec3 Position;
 in vec3 Color;
 in vec2 UV;

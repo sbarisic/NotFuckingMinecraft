@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\..\..\Dropbox\Testing\NotFuckingMinecraft\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\..\..\Dropbox\Testing\NotFuckingMinecraft\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ThirdParty\OpenTK.dll</HintPath>
+      <HintPath>..\..\OpenTK\Binaries\OpenTK\Debug\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,6 +69,7 @@
     <Compile Include="Utils\Octree\OctreeBox.cs" />
     <Compile Include="Utils\Octree\OctreeLeaf.cs" />
     <Compile Include="Utils\Octree\OctreeNode.cs" />
+    <Compile Include="Utils\RWriter.cs" />
     <Compile Include="World\Block.cs" />
     <Compile Include="World\Macroblock.cs" />
     <Compile Include="Program.cs" />
@@ -126,8 +127,8 @@ DEL $(OutDir)*.vshost.exe
 DEL $(OutDir)*.txt</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>DEL $(OutDir)*.dll
-DEL $(OutDir)*.7z</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

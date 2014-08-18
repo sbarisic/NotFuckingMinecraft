@@ -1,4 +1,4 @@
-﻿//#define FRAMEBUFFER // Enable screen framebffer
+﻿#define FRAMEBUFFER // Enable screen framebffer
 
 using NFM.Entities;
 using OpenTK;
@@ -7,14 +7,16 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using MsgBox = System.Windows.Forms.MessageBox;
 using MsgBoxButtons = System.Windows.Forms.MessageBoxButtons;
 using MsgBoxIcon = System.Windows.Forms.MessageBoxIcon;
+using System.Diagnostics;
 
 namespace NFM {
 
 	static class Settings {
-		public const string Version = "0.1.0.0";
+		public const string Version = "0.1.0.2";
 
 		public static bool Flatlands = false;
 		public static bool Colored = false;
@@ -23,42 +25,57 @@ namespace NFM {
 	}
 
 	class Program {
-		public static bool Running;
 		public static Stopwatch SWatch = new Stopwatch();
 
 		static void Msg(object O) {
-			MsgBox.Show(O.ToString(), "Not Fucking Minecraft", MsgBoxButtons.OK);
+			Debug.WriteLine(O, "Msg");
 		}
 
-		static void CrashDump(Exception E) {
-			File.WriteAllText("CRASHDUMP.txt", string.Format("This fucking exception was not handled\n\n{0}", E));
-			MsgBox.Show("CRASHDUMP.txt has been created!", "MOTHERFUCKING SHIT", MsgBoxButtons.OK, MsgBoxIcon.Error);
+		static void MsgE(Exception E) {
+			//MsgBox.Show(E.Message, "Not Fucking Minecraft Exception", MsgBoxButtons.OK);
+			Debug.WriteLine(E, "MsgE");
 		}
+
+		static void DebugSetup() {
+			Console.SetOut(new RWriter(WriterType.Out));
+			Console.SetError(new RWriter(WriterType.Error));
+
+			TraceListener L = new ConsoleTraceListener();
+			Debug.Listeners.Add(L);
+
+			AppDomain.CurrentDomain.UnhandledException += (S, E) => {
+				ShowWindow(ConsoleWindow, SW_SHOW);
+				MsgE((Exception)E.ExceptionObject);
+			};
+		}
+
+		[DllImport("kernel32.dll")]
+		static extern IntPtr GetConsoleWindow();
+		[DllImport("user32.dll")]
+		static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+		const int SW_HIDE = 0;
+		const int SW_SHOW = 5;
+		static IntPtr ConsoleWindow;
 
 		static void Main(string[] args) {
-			Running = true;
+			//Console.Title = "Not Fucking Minecraft Console " + Settings.Version;
+			Console.WriteLine("v{0}", Settings.Version);
 
-			// Enable this crash handler when releasing, else it doesn't dump any crash info
-			//*
-			bool Crashed = false;
-			AppDomain.CurrentDomain.UnhandledException += (S, E) => {
-				if (Crashed)
-					return;
-				Running = !(Crashed = true);
-				CrashDump((Exception)E.ExceptionObject);
-				Environment.Exit(1);
-			};//*/
+			DebugSetup();
+			ConsoleWindow = GetConsoleWindow();
+			ShowWindow(ConsoleWindow, SW_HIDE);
 
-			Renderer R = new Renderer();
-			SWatch.Start();
-			R.Run();
+			using (Renderer R = new Renderer()) {
+				SWatch.Start();
+				R.Run();
+			}
 
 			Environment.Exit(0);
 		}
 	}
 
 	class Renderer : GameWindow {
-		public string Caption = "Not Fucking Minecraft";
+		public string Caption = "Not Fucking Minecraft " + Settings.Version;
 
 		public World GameWorld;
 
@@ -66,11 +83,6 @@ namespace NFM {
 		Framebuffer Scr;
 		VertexArray ScrQuad;
 #endif
-
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-			Program.Running = false;
-			base.OnClosing(e);
-		}
 
 		protected override void OnResize(EventArgs e) {
 			Camera.ScreenRes = SizeMgr.SizeScale = new Vector2(ClientRectangle.Width, ClientRectangle.Height);

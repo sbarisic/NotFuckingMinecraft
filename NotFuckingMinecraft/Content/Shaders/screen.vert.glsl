@@ -5,7 +5,7 @@ uniform mat4 u_modelview;
 uniform mat4 u_projection;
 uniform mat4 u_view;
 uniform mat4 u_viewrot;
-uniform unsigned int Time;
+uniform float Time;
 
 in vec4 Data;
 in vec3 Position;
