@@ -9,15 +9,18 @@ namespace NFM {
 		public static Random R = new Random();
 	}
 
-	static class Mth {
+	static class Meth {
 		public static float Pi {
 			get {
 				return (float)Math.PI;
 			}
+			set {
+				throw new Exception("You can't change the definition of Pi, you faggot!");
+			}
 		}
 
 		public static float Sin(this double D) {
-			return Sin((float)D);
+			return ((float)D).Sin();
 		}
 
 		public static float Sin(this float F) {
@@ -25,11 +28,27 @@ namespace NFM {
 		}
 
 		public static float Cos(this double D) {
-			return Cos((float)D);
+			return ((float)D).Cos();
 		}
 
 		public static float Cos(this float F) {
 			return (float)Math.Cos(F);
+		}
+
+		public static float Tan(this double D) {
+			return ((float)D).Tan();
+		}
+
+		public static float Tan(this float F) {
+			return (float)Math.Tan(F);
+		}
+
+		public static float Tanh(this double D) {
+			return ((float)D).Tanh();
+		}
+
+		public static float Tanh(this float F) {
+			return (float)Math.Tanh(F);
 		}
 	}
 

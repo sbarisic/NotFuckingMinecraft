@@ -1,6 +1,7 @@
 ﻿#version 330
 
 uniform sampler2D TEX;
+uniform sampler2D TEX2;
 uniform float Time;
 uniform vec2 Resolution;
 
@@ -63,6 +64,20 @@ vec3 FXAA() {
   if((lumaB < lumaMin) || (lumaB > lumaMax)) { return rgbA; } else { return rgbB; }
 }
 
+float depth(vec2 uv) {
+	float n = 1.0; // camera z near
+	float f = 2000.0; // camera z far
+	float z = texture2D(TEX2, uv).x;
+	//return (2.0 * n) / (f + n - z * (f - n));
+	return (n * z) / (f - z * (f - n));
+}
+
+vec3 gamma(vec3 color) {
+	// TODO?
+	//return pow(color, vec3(1.0 / 2.0));
+	return color;
+}
+
 void main() {
 	vec3 Tx;
 
@@ -71,8 +86,7 @@ void main() {
 	else 
 		Tx = texture(TEX, Pixelate(oUV)).xyz;
 
-	/*float FogFactor = gl_FragCoord.z / gl_FragCoord.w / 1500;
-	vec3 Fog = mix(vec3(1, 1, 1), vec3(.65, .65, .65), FogFactor);*/
+	vec3 Fog = mix(vec3(1, 1, 1), vec3(0 + 0.5, 30.f/255 + 0.5, 30.f/255 + 0.5), depth(oUV));
 
-	Clr = vec4(Tx, 1);
+	Clr = vec4(gamma(Tx * Fog), 1);
 }

@@ -68,6 +68,12 @@ namespace NFM {
 			GLf.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
 		}
 
+		public void Render(Action A) {
+			Bind();
+			A();
+			Unbind();
+		}
+
 		public void Unbind() {
 			R.GLViewport();
 			GLf.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

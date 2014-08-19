@@ -144,6 +144,13 @@ namespace NFM {
 			Bmp.UnlockBits(BLock);
 			Bmp.Dispose();
 
+			// TODO: Get gamma correction working
+			/*
+			for (int i = 0; i < Data.Length; i++)
+				if ((i + 1) % 4 != 0)
+					Data[i] = (byte)Math.Pow(Data[i], 2);
+			//*/
+
 			Dirty = true;
 		}
 

@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 namespace NFM.Entities {
 
 	class Player : Entity {
-		float Mouse_Yd = Mth.Pi / 2;
-		float Mouse_Xd = 3 * (Mth.Pi / 4);
+		float Mouse_Yd = Meth.Pi / 2;
+		float Mouse_Xd = 3 * (Meth.Pi / 4);
 
 		Point Center;
 		Point Delt;
@@ -42,7 +42,7 @@ namespace NFM.Entities {
 		}
 
 		public override void Init() {
-			Camera.Projection = Matrix4.CreatePerspectiveFieldOfView(90 * Mth.Pi / 180,
+			Camera.Projection = Matrix4.CreatePerspectiveFieldOfView(90 * Meth.Pi / 180,
 				SizeMgr.SizeScale.X / SizeMgr.SizeScale.Y, 0.1f, 10000f);
 			Camera.Move(0, 0, -Macroblock.ChunkSize * Block.Size * 6);
 			Camera.ScreenRes = SizeMgr.SizeScale;
@@ -112,10 +112,10 @@ namespace NFM.Entities {
 
 			if (Keyboard[Key.W])
 				Camera.View = Matrix4.Mult(Camera.View, Matrix4.CreateTranslation(
-					Sens * (Mouse_Xd + Mth.Pi / 2).Cos(), Sens * (Mouse_Xd + Mth.Pi / 2).Sin(), 0));
+					Sens * (Mouse_Xd + Meth.Pi / 2).Cos(), Sens * (Mouse_Xd + Meth.Pi / 2).Sin(), 0));
 			if (Keyboard[Key.S])
 				Camera.View = Matrix4.Mult(Camera.View, Matrix4.CreateTranslation(
-					-Sens * (Mouse_Xd + Mth.Pi / 2).Cos(), -Sens * (Mouse_Xd + Mth.Pi / 2).Sin(), 0));
+					-Sens * (Mouse_Xd + Meth.Pi / 2).Cos(), -Sens * (Mouse_Xd + Meth.Pi / 2).Sin(), 0));
 			if (Keyboard[Key.A])
 				Camera.View = Matrix4.Mult(Camera.View, Matrix4.CreateTranslation(
 					-Sens * Mouse_Xd.Cos(), -Sens * Mouse_Xd.Sin(), 0));

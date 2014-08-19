@@ -176,11 +176,13 @@ namespace NFM {
 			return false;
 		}
 
-		public void Render() {
+		public void RenderSkybox() {
 			GL.DepthMask(false);
 			Skybox.Render();
 			GL.DepthMask(true);
+		}
 
+		public void Render() {
 			for (int x = 0; x < WorldSize; x++)
 				for (int y = 0; y < WorldSize; y++)
 					for (int z = 0; z < WorldHeight; z++) {

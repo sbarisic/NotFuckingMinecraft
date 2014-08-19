@@ -32,15 +32,15 @@ vec4 WireColor(int BID) {
 void main() {
 	vec4 Tex = texture(TEX, oUV);
 
-	float FogFactor = gl_FragCoord.z / gl_FragCoord.w / 1500;
+	/*float FogFactor = gl_FragCoord.z / gl_FragCoord.w / 1500;
 	vec3 Fog = mix(vec3(1, 1, 1), vec3(.65, .65, .65), FogFactor);
 
 	float Mult = 1;
-	/*if (Normal.z == 1 || Normal.x == 1 || Normal.y == 1)
+	if (Normal.z == 1 || Normal.x == 1 || Normal.y == 1)
 		Mult = 1;*/
 
-	Clr = vec4(Tex.rgb * oColor.rgb * Fog * Mult, oColor.a * Tex.a);
+	Clr = vec4(Tex.rgb * oColor.rgb /** Fog * Mult*/, oColor.a * Tex.a);
 
 	if (Settings.y == 1) // Wireframe
-		Clr = WireColor(BlockID) * vec4(Fog, 1);
+		Clr = WireColor(BlockID) /** vec4(Fog, 1)*/;
 }

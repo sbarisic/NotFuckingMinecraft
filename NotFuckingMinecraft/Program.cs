@@ -157,6 +157,7 @@ namespace NFM {
 
 			Scr = new Framebuffer(this, Width, Height);
 			ScrQuad.SetTexture(Scr.Color);
+			ScrQuad.SetTexture2(Scr.DepthStencil);
 
 			Macroblock.GlobalShaderProg = new Prog(
 				Shader.FromFile("Content/Shaders/block.frag.glsl", ShaderType.FragmentShader),
@@ -175,11 +176,13 @@ namespace NFM {
 			GL.Viewport(0, 0, (int)SizeMgr.SizeScale.X, (int)SizeMgr.SizeScale.Y);
 		}
 
-		void Clear(float R = 255, float G = 255, float B = 255, float A = 255) {
-			GL.ClearColor(R / 255, G / 255, B / 255, A / 255);
-			GL.Clear(ClearBufferMask.ColorBufferBit);
-			GL.Clear(ClearBufferMask.DepthBufferBit);
-			GL.Clear(ClearBufferMask.StencilBufferBit);
+		void Clear(bool Color = false, bool Depth = false, bool Stencil = false) {
+			if (Color)
+				GL.Clear(ClearBufferMask.ColorBufferBit);
+			if (Depth)
+				GL.Clear(ClearBufferMask.DepthBufferBit);
+			if (Stencil)
+				GL.Clear(ClearBufferMask.StencilBufferBit);
 		}
 
 		void InitOpenGL() {
@@ -201,28 +204,24 @@ namespace NFM {
 
 		protected override void OnRenderFrame(FrameEventArgs e) {
 			GLGarbage.Flush();
-			Clear();
 
-			Scr.Bind();
-			{
-				if (Settings.Wireframe)
-					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-				else
-					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+			Scr.Render(() => {
+				Clear(false, true, true);
+				GameWorld.RenderSkybox();
 
-				Clear(70, 70, 70);
+				GL.PolygonMode(MaterialFace.FrontAndBack, Settings.Wireframe ? PolygonMode.Line : PolygonMode.Fill);
+
+
 				GameWorld.Render();
 
 				GL.CullFace(CullFaceMode.Front);
 				GameWorld.RenderTransparent();
 				GL.CullFace(CullFaceMode.Back);
 				GameWorld.RenderTransparent();
-			}
-			Scr.Unbind();
+			});
 
-			if (Settings.Wireframe)
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-
+			GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+			Clear(false, true, false);
 			ScrQuad.Render();
 
 			SwapBuffers();

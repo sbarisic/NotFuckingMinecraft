@@ -176,7 +176,7 @@ namespace NFM {
 		VertexBuffer<Vector3> Verts, Colors;
 		VertexBuffer<Vector4> BlockData;
 
-		IBindable Tex;
+		IBindable Tex, Tex2;
 
 		public PrimitiveType PType = PrimitiveType.Quads;
 		public Matrix4 ModelMatrix;
@@ -228,6 +228,10 @@ namespace NFM {
 			Tex = T;
 		}
 
+		public void SetTexture2(GLTexture T) {
+			Tex2 = T;
+		}
+
 		public void Use(bool Indice = false, bool Color = true, bool UV = true, bool BlockDta = true) {
 			Indices.Active = Indice;
 			Colors.Active = Color;
@@ -248,10 +252,13 @@ namespace NFM {
 			GLProg.Bind();
 			GL.BindVertexArray(ID);
 
-			if (Tex != null) {
-				Tex.Bind();
-				GLProg.SetUniform("TEX", Tex);
-			}
+			if (Tex != null)
+				if (GLProg.SetUniform("TEX", Tex))
+					Tex.Bind();
+			if (Tex2 != null)
+				if (GLProg.SetUniform("TEX2", Tex2))
+					Tex2.Bind();
+
 			GLProg.SetUniform("u_modelview", ref ModelMatrix);
 			GLProg.SetUniform("u_projection", ref Camera.Projection);
 			GLProg.SetUniform("u_view", ref Camera.View);

@@ -64,6 +64,13 @@ namespace NFM {
 			}
 		}
 
+		public Prog(bool Empty = true) {
+			if (!Empty)
+				throw new Exception("Can not create NULL shader");
+
+			ID = 0;
+		}
+
 		public Prog(params Shader[] Shaders) {
 			if (Shaders.Length < 1)
 				throw new Exception("No shaders to attach");
