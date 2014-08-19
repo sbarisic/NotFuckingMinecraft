@@ -248,8 +248,10 @@ namespace NFM {
 			GLProg.Bind();
 			GL.BindVertexArray(ID);
 
-			if (Tex != null)
+			if (Tex != null) {
+				Tex.Bind();
 				GLProg.SetUniform("TEX", Tex);
+			}
 			GLProg.SetUniform("u_modelview", ref ModelMatrix);
 			GLProg.SetUniform("u_projection", ref Camera.Projection);
 			GLProg.SetUniform("u_view", ref Camera.View);

@@ -12,7 +12,6 @@ namespace NFM {
 		BlockID[, ,] Blocks;
 
 		VertexArray VBO, VBOt;
-		//VertexArray VBOShadow;
 
 		Prog ShaderProg;
 		Texture Atlas;
@@ -22,7 +21,6 @@ namespace NFM {
 		List<Vector2> UVs = new List<Vector2>();
 		List<Vector3> Clrs = new List<Vector3>();
 		List<Vector4> BlockData = new List<Vector4>();
-		//List<Vector3> Shadow = new List<Vector3>();
 
 		List<Vector3> MeshT = new List<Vector3>();
 		List<Vector2> UVsT = new List<Vector2>();
@@ -204,7 +202,6 @@ namespace NFM {
 			ClrsT.Clear();
 			BlockData.Clear();
 			BlockDataT.Clear();
-			//Shadow.Clear();
 
 			for (int x = 0; x < Size; x++)
 				for (int y = 0; y < Size; y++)
@@ -259,11 +256,9 @@ namespace NFM {
 						null, Clrs.ToArray(), UVs.ToArray(), BlockData.ToArray());
 					VBOt = new VertexArray(ShaderProg, ChunkMatrix, MeshT.ToArray(),
 						null, ClrsT.ToArray(), UVsT.ToArray(), BlockDataT.ToArray());
-					//VBOShadow = new VertexArray(ShaderProg, ChunkMatrix, Shadow.ToArray());
 				} else {
 					VBO.Set(Mesh.ToArray(), null, Clrs.ToArray(), UVs.ToArray(), BlockData.ToArray());
 					VBOt.Set(MeshT.ToArray(), null, ClrsT.ToArray(), UVsT.ToArray(), BlockDataT.ToArray());
-					//VBOShadow.Set(Shadow.ToArray());
 				}
 				VBO.SetTexture(Atlas);
 				VBOt.SetTexture(Atlas);

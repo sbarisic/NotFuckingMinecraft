@@ -22,6 +22,8 @@ namespace NFM {
 
 			int Status;
 			GL.GetShader(ID, ShaderParameter.CompileStatus, out Status);
+			string InfoLog = GL.GetShaderInfoLog(ID);
+
 			if (Status == 0) {
 				StringBuilder Sb = new StringBuilder();
 				Sb.AppendLine("Shader compilation failure in");
@@ -30,6 +32,8 @@ namespace NFM {
 				Sb.AppendLine(GL.GetShaderInfoLog(ID));
 				throw new Exception(Sb.ToString());
 			}
+
+			Program.Msg(InfoLog);
 		}
 
 		~Shader() {
@@ -81,12 +85,16 @@ namespace NFM {
 
 			int Status;
 			GL.GetProgram(ID, GetProgramParameterName.LinkStatus, out Status);
+			string PInfo = GL.GetProgramInfoLog(ID);
+
 			if (Status == 0) {
 				StringBuilder Sb = new StringBuilder();
 				Sb.AppendLine("Program linking failure:");
-				Sb.AppendLine(GL.GetProgramInfoLog(ID));
+				Sb.AppendLine(PInfo);
 				throw new Exception(Sb.ToString());
 			}
+
+			Program.Msg(PInfo);
 		}
 
 		~Prog() {

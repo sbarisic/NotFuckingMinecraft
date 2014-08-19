@@ -1,6 +1,4 @@
-﻿#define FRAMEBUFFER // Enable screen framebffer
-
-using NFM.Entities;
+﻿using NFM.Entities;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -11,12 +9,13 @@ using System.Runtime.InteropServices;
 using MsgBox = System.Windows.Forms.MessageBox;
 using MsgBoxButtons = System.Windows.Forms.MessageBoxButtons;
 using MsgBoxIcon = System.Windows.Forms.MessageBoxIcon;
-using System.Diagnostics;
+using OpenTK.Graphics;
 
 namespace NFM {
 
 	static class Settings {
-		public const string Version = "0.1.0.3";
+		public const string Version = "0.1.1.0";
+		public const string Caption = "Not Fucking Minecraft " + Settings.Version;
 
 		public static bool Flatlands = false;
 		public static bool Colored = false;
@@ -27,11 +26,36 @@ namespace NFM {
 	class Program {
 		public static Stopwatch SWatch = new Stopwatch();
 
-		static void Msg(object O) {
-			Debug.WriteLine(O, "Msg");
+		public static void Indented(string Msg, Action A) {
+			Indent(Msg);
+			A();
+			Indent(false);
 		}
 
-		static void MsgE(Exception E) {
+		public static void Indent(string Msg) {
+			Debug.WriteLine(Msg + ":");
+			Indent(true);
+		}
+
+		public static void Indent(bool DoIndent = true) {
+			if (DoIndent)
+				Debug.Indent();
+			else
+				Debug.Unindent();
+		}
+
+		public static void Msg(object O) {
+			string S = O.ToString();
+			if (S.Length > 0)
+				Debug.WriteLine(S, "Msg");
+		}
+
+		public static void Msg(string[] M) {
+			for (int i = 0; i < M.Length; i++)
+				Msg(M[i]);
+		}
+
+		public static void MsgE(Exception E) {
 			//MsgBox.Show(E.Message, "Not Fucking Minecraft Exception", MsgBoxButtons.OK);
 			Debug.WriteLine(E, "MsgE");
 		}
@@ -44,92 +68,85 @@ namespace NFM {
 			Debug.Listeners.Add(L);
 
 			AppDomain.CurrentDomain.UnhandledException += (S, E) => {
-				ShowWindow(ConsoleWindow, SW_SHOW);
 				MsgE((Exception)E.ExceptionObject);
 			};
 		}
 
-		[DllImport("kernel32.dll")]
-		static extern IntPtr GetConsoleWindow();
-		[DllImport("user32.dll")]
-		static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-		const int SW_HIDE = 0;
-		const int SW_SHOW = 5;
-		static IntPtr ConsoleWindow;
 
 		static void Main(string[] args) {
-			//Console.Title = "Not Fucking Minecraft Console " + Settings.Version;
-			Console.WriteLine("v{0}", Settings.Version);
-
 			DebugSetup();
-			ConsoleWindow = GetConsoleWindow();
-			ShowWindow(ConsoleWindow, SW_HIDE);
+			Console.WriteLine(Settings.Caption);
 
-			Renderer R = new Renderer();
-			Debug.Indent();
-			SWatch.Start();
-			R.Run();
-			Debug.Unindent();
-			R.Dispose();
+			Toolkit T = null;
+			Renderer R = null;
+			Indented("Renderer", () => {
+				ToolkitOptions TO = new ToolkitOptions();
+				TO.Backend = PlatformBackend.PreferNative;
+				TO.EnableHighResolution = true;
+				T = Toolkit.Init(TO);
+
+				GraphicsMode GMode = new GraphicsMode(GraphicsMode.Default.ColorFormat, 24, 8, 0, 0, 2, false);
+				R = new Renderer(GMode, 800, 600);
+			});
+
+			Indented("OpenGL", () => {
+				Msg(string.Format("[{0}] Venor[{1}] GLSL[{2}] Renderer[{3}]",
+					GL.GetString(StringName.Version),
+					GL.GetString(StringName.Vendor),
+					GL.GetString(StringName.ShadingLanguageVersion),
+					GL.GetString(StringName.Renderer)));
+			});
+
+			Indented("Extensions", () => {
+				Msg(GL.GetString(StringName.Extensions).Split(' '));
+			});
+
+			Indented("Run", () => {
+				SWatch.Start();
+				R.Run();
+			});
+
+			Indented("Disposal", () => {
+				R.Dispose();
+				T.Dispose();
+			});
 
 			Environment.Exit(0);
 		}
 	}
 
 	class Renderer : GameWindow {
-		public string Caption = "Not Fucking Minecraft " + Settings.Version;
-
 		public World GameWorld;
 
-#if FRAMEBUFFER
 		Framebuffer Scr;
 		VertexArray ScrQuad;
-#endif
 
-		protected override void OnResize(EventArgs e) {
-			Camera.ScreenRes = SizeMgr.SizeScale = new Vector2(ClientRectangle.Width, ClientRectangle.Height);
-			GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
-			base.OnResize(e);
+		public Renderer(GraphicsMode GMode, int W, int H) :
+			base(W, H, GMode, Settings.Caption,
+			GameWindowFlags.FixedWindow, DisplayDevice.Default, 1, 0, GraphicsContextFlags.Debug) {
+			SizeMgr.SizeScale = new Vector2(W, H);
+		}
+
+		public Renderer(int W, int H)
+			: base(W, H) {
+			SizeMgr.SizeScale = new Vector2(W, H);
 		}
 
 		protected override void OnLoad(EventArgs e) {
-			base.OnLoad(e);
-
-			ToolkitOptions.Default.Backend = PlatformBackend.PreferNative;
-
-			VSync = VSyncMode.On;
-			WindowBorder = OpenTK.WindowBorder.Fixed;
-			Title = Caption;
-
+			MakeCurrent();
 			this.Icon = Icon.ExtractAssociatedIcon("Content/terminal.ico");
 
-			Width = 800;
-			Height = 600;
 			X = Screen.Wi / 2 - Width / 2;
 			Y = Screen.Hi / 2 - Height / 2;
-			OnResize(null);
+			InitOpenGL();
 
-			GL.ClearColor(70f / 255, 70f / 255, 70f / 255, 1);
-			GL.Enable(EnableCap.DepthTest);
-			GL.Enable(EnableCap.Texture2D);
-
-			// Back face culling
-			GL.Enable(EnableCap.CullFace);
-			GL.CullFace(CullFaceMode.Back);
-
-			// Blending
-			GL.Enable(EnableCap.Blend);
-			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-#if FRAMEBUFFER
-			Scr = new Framebuffer(this, Width, Height);
 			Prog ScrProg = new Prog(Shader.FF("Content/Shaders/screen.frag.glsl", ShaderType.FragmentShader),
-				Shader.FF("Content/Shaders/screen.vert.glsl", ShaderType.VertexShader));
+							Shader.FF("Content/Shaders/screen.vert.glsl", ShaderType.VertexShader));
 			ScrQuad = new VertexArray(ScrProg, Matrix4.Identity, new Vector3[] {
-				new Vector3(-1, -1, 0),
-				new Vector3(1, -1, 0),
-				new Vector3(1, 1, 0),
-				new Vector3(-1, 1, 0)
+				new Vector3(-1, -1, -1),
+				new Vector3(1, -1, -1),
+				new Vector3(1, 1, -1),
+				new Vector3(-1, 1, -1)
 			}, null, null, new Vector2[] {
 				new Vector2(0, 0),
 				new Vector2(1, 0),
@@ -137,8 +154,9 @@ namespace NFM {
 				new Vector2(0, 1),
 			});
 			ScrQuad.Use(true, false, true, false);
+
+			Scr = new Framebuffer(this, Width, Height);
 			ScrQuad.SetTexture(Scr.Color);
-#endif
 
 			Macroblock.GlobalShaderProg = new Prog(
 				Shader.FromFile("Content/Shaders/block.frag.glsl", ShaderType.FragmentShader),
@@ -152,41 +170,63 @@ namespace NFM {
 			Entity.Create<Player>(this);
 		}
 
+		public void GLViewport() {
+			Camera.ScreenRes = SizeMgr.SizeScale;
+			GL.Viewport(0, 0, (int)SizeMgr.SizeScale.X, (int)SizeMgr.SizeScale.Y);
+		}
+
+		void Clear(float R = 255, float G = 255, float B = 255, float A = 255) {
+			GL.ClearColor(R / 255, G / 255, B / 255, A / 255);
+			GL.Clear(ClearBufferMask.ColorBufferBit);
+			GL.Clear(ClearBufferMask.DepthBufferBit);
+			GL.Clear(ClearBufferMask.StencilBufferBit);
+		}
+
+		void InitOpenGL() {
+			GLViewport();
+
+			GL.ClearColor(70f / 255, 70f / 255, 70f / 255, 1);
+			GL.Enable(EnableCap.DepthTest);
+
+			// Back face culling
+			GL.Enable(EnableCap.CullFace);
+			GL.CullFace(CullFaceMode.Back);
+
+			// Blending
+			GL.Enable(EnableCap.Blend);
+			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+			GL.Enable(EnableCap.Texture2D);
+		}
+
 		protected override void OnRenderFrame(FrameEventArgs e) {
 			GLGarbage.Flush();
+			Clear();
 
-			ClearBufferMask CBM = ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit;
-			GL.Clear(CBM);
-
-			// TODO: Fix these gay framebuffers, they obviously don't work on nVidia cards
-#if FRAMEBUFFER
 			Scr.Bind();
 			{
-#endif
 				if (Settings.Wireframe)
 					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 				else
 					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
-				GL.Clear(CBM);
+				Clear(70, 70, 70);
 				GameWorld.Render();
 
-				/*GL.CullFace(CullFaceMode.Front);
-				GameWorld.RenderTransparent();*/
+				GL.CullFace(CullFaceMode.Front);
+				GameWorld.RenderTransparent();
 				GL.CullFace(CullFaceMode.Back);
 				GameWorld.RenderTransparent();
-#if FRAMEBUFFER
 			}
 			Scr.Unbind();
 
 			if (Settings.Wireframe)
 				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
 			ScrQuad.Render();
-#endif
+
 			SwapBuffers();
 			base.OnRenderFrame(e);
-
-
 		}
 	}
 

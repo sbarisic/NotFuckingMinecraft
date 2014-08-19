@@ -8,8 +8,7 @@ uniform vec4 Settings;
 
 in vec2 oUV;
 
-layout(location = 0) out vec3 Clr;
-layout(location = 1) out vec3 Clr2;
+out vec4 Clr;
 
 vec2 Pixelate(vec2 UV) {
 	float PS = 3.0; // Pixel size
@@ -70,11 +69,10 @@ void main() {
 	if (Settings.x == 1 && Settings.y == 0) // FXAA and no wireframe?
 		Tx = FXAA();
 	else 
-		Tx = texture(TEX, oUV).xyz;
+		Tx = texture(TEX, Pixelate(oUV)).xyz;
 
-	float FogFactor = gl_FragCoord.z / gl_FragCoord.w / 1500;
-	vec3 Fog = mix(vec3(1, 1, 1), vec3(.65, .65, .65), FogFactor);
+	/*float FogFactor = gl_FragCoord.z / gl_FragCoord.w / 1500;
+	vec3 Fog = mix(vec3(1, 1, 1), vec3(.65, .65, .65), FogFactor);*/
 
-	Clr = Tx * Fog;
-	Clr2 = vec3(0, 1, 0);
+	Clr = vec4(Tx, 1);
 }

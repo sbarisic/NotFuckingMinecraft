@@ -1,11 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
 
+using GLf = OpenTK.Graphics.OpenGL.GL.Ext;
+
 namespace NFM {
 
 	class Framebuffer : IBindable {
 		public int ID;
-		//public int Buffers; // Render buffer
 		public int W, H;
 		public GLTexture Color, DepthStencil;
 
@@ -19,46 +20,34 @@ namespace NFM {
 
 		~Framebuffer() {
 			GLGarbage.Enqueue(() => {
-				/*var B = new int[] { Buffers };
-				GL.DeleteRenderbuffers(B.Length, B);*/
-				GL.DeleteFramebuffer(ID);
+				GLf.DeleteFramebuffer(ID);
 			});
 		}
 
 		public Framebuffer(Renderer R, int W, int H) {
-			ID = GL.GenFramebuffer();
-			GL.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
-
 			this.R = R;
 			this.W = W;
 			this.H = H;
 
 			Color = new GLTexture(TextureTarget.Texture2D);
 			Color.Bind(false);
-			Color.Image2D(0, PixelInternalFormat.Rgb, W, H, PixelFormat.Rgb, PixelType.UnsignedByte);
+			Color.Image2D(0, PixelInternalFormat.Rgba8, W, H, PixelFormat.Rgba, PixelType.UnsignedByte);
 			Color.TexParameter(TextureParameterName.TextureMinFilter, TextureMinFilter.Nearest);
 			Color.TexParameter(TextureParameterName.TextureMagFilter, TextureMagFilter.Nearest);
-			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,
-				FramebufferAttachment.ColorAttachment0, Color.Target, Color.GetID, 0);
 
 			DepthStencil = new GLTexture(TextureTarget.Texture2D);
 			DepthStencil.Bind(false);
-			DepthStencil.Image2D(0, PixelInternalFormat.Depth24Stencil8, W, H, PixelFormat.DepthStencil, PixelType.UnsignedInt248);
+			DepthStencil.Image2D(0, PixelInternalFormat.DepthComponent32, W, H,
+				PixelFormat.DepthComponent, PixelType.UnsignedInt);
 			DepthStencil.TexParameter(TextureParameterName.TextureMinFilter, TextureMinFilter.Nearest);
 			DepthStencil.TexParameter(TextureParameterName.TextureMagFilter, TextureMagFilter.Nearest);
-			GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,
-				FramebufferAttachment.DepthStencilAttachment, DepthStencil.Target, DepthStencil.GetID, 0);
 
-			/*Buffers = GL.GenRenderbuffer();
-			GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, Buffers);
-			GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, W, H);
-			GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment,
-				RenderbufferTarget.Renderbuffer, Buffers);
-
-			DrawBuffersEnum[] DrawBuffs = new DrawBuffersEnum[] { 
-				DrawBuffersEnum.ColorAttachment0,
-			};
-			GL.DrawBuffers(DrawBuffs.Length, DrawBuffs);*/
+			ID = GLf.GenFramebuffer();
+			GLf.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
+			GLf.FramebufferTexture2D(FramebufferTarget.Framebuffer,
+				FramebufferAttachment.ColorAttachment0, Color.Target, Color.GetID, 0);
+			GLf.FramebufferTexture2D(FramebufferTarget.Framebuffer,
+				FramebufferAttachment.DepthAttachment, DepthStencil.Target, DepthStencil.GetID, 0);
 
 			Check();
 			Unbind();
@@ -66,7 +55,7 @@ namespace NFM {
 
 		public void Check() {
 			FramebufferErrorCode FEC;
-			if ((FEC = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)) != FramebufferErrorCode.FramebufferComplete)
+			if ((FEC = GLf.CheckFramebufferStatus(FramebufferTarget.Framebuffer)) != FramebufferErrorCode.FramebufferComplete)
 				throw new Exception(FEC.ToString());
 
 			ErrorCode EC;
@@ -75,13 +64,13 @@ namespace NFM {
 		}
 
 		public void Bind() {
-			GL.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
 			GL.Viewport(0, 0, W, H);
+			GLf.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
 		}
 
 		public void Unbind() {
-			GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-			GL.Viewport(R.ClientRectangle.X, R.ClientRectangle.Y, R.ClientRectangle.Width, R.ClientRectangle.Height);
+			R.GLViewport();
+			GLf.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 		}
 	}
 

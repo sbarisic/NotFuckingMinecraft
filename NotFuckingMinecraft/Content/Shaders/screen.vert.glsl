@@ -9,6 +9,7 @@ uniform float Time;
 
 in vec4 Data;
 in vec3 Position;
+in vec3 Color;
 in vec2 UV;
 
 out vec2 oUV;

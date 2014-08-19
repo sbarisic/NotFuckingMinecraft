@@ -42,11 +42,12 @@ namespace NFM.Entities {
 		}
 
 		public override void Init() {
-			Camera.Projection = Matrix4.CreatePerspectiveFieldOfView(90 * Mth.Pi / 180, (float)R.Width / R.Height, 0.1f, 10000f);
+			Camera.Projection = Matrix4.CreatePerspectiveFieldOfView(90 * Mth.Pi / 180,
+				SizeMgr.SizeScale.X / SizeMgr.SizeScale.Y, 0.1f, 10000f);
 			Camera.Move(0, 0, -Macroblock.ChunkSize * Block.Size * 6);
-			Camera.ScreenRes = new Vector2(R.Width, R.Height);
+			Camera.ScreenRes = SizeMgr.SizeScale;
 
-			Center = new Point(R.X + R.Width / 2, R.Y + R.Height / 2);
+			Center = new Point(R.X + (int)SizeMgr.SizeScale.X / 2, R.Y + (int)SizeMgr.SizeScale.Y / 2);
 			SetCursorPos(Center);
 			R.Cursor = MouseCursor.Empty;
 
