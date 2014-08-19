@@ -11,7 +11,7 @@ namespace NFM {
 
 	class GLTexture : IBindable {
 		int ID;
-		public TextureTarget TexT;
+		public TextureTarget Target;
 
 		public int GetID {
 			get {
@@ -21,16 +21,21 @@ namespace NFM {
 
 		public GLTexture(TextureTarget TT) {
 			ID = GL.GenTexture();
-			TexT = TT;
+			Target = TT;
+		}
+
+		public void Bind(bool ActiveTexture) {
+			if (ActiveTexture)
+				GL.ActiveTexture(TextureUnit.Texture0 + ID);
+			GL.BindTexture(Target, ID);
 		}
 
 		public void Bind() {
-			GL.ActiveTexture(TextureUnit.Texture0 + ID);
-			GL.BindTexture(TexT, ID);
+			Bind(true);
 		}
 
 		public void Unbind() {
-			GL.BindTexture(TexT, 0);
+			GL.BindTexture(Target, 0);
 		}
 
 		public void Image2D(int Lvl, PixelInternalFormat PIF, int W, int H, PixelType PT) {
@@ -40,10 +45,10 @@ namespace NFM {
 			Image2D(Lvl, PIF, W, H, PF, PT, IntPtr.Zero);
 		}
 		public void Image2D(int Lvl, PixelInternalFormat PIF, int W, int H, PixelFormat PF, PixelType PT, IntPtr Data) {
-			GL.TexImage2D(TexT, Lvl, PIF, W, H, 0, PF, PT, Data);
+			GL.TexImage2D(Target, Lvl, PIF, W, H, 0, PF, PT, Data);
 		}
 		public void Image2D(int Lvl, PixelInternalFormat PIF, int W, int H, PixelFormat PF, PixelType PT, byte[] Data) {
-			GL.TexImage2D(TexT, Lvl, PIF, W, H, 0, PF, PT, Data);
+			GL.TexImage2D(Target, Lvl, PIF, W, H, 0, PF, PT, Data);
 		}
 
 		public void TexParameter(TextureParameterName TPN, All Param) {
@@ -68,7 +73,7 @@ namespace NFM {
 			TexParameter(TPN, (int)Param);
 		}
 		public void TexParameter(TextureParameterName TPN, int Param) {
-			GL.TexParameter(TexT, TPN, Param);
+			GL.TexParameter(Target, TPN, Param);
 		}
 
 		~GLTexture() {
@@ -111,7 +116,7 @@ namespace NFM {
 		}
 
 		public Texture(Framebuffer FB) {
-			TEX = FB.TEX;
+			TEX = FB.Color;
 			Init(FB.W, FB.H);
 			Dirty = true;
 		}

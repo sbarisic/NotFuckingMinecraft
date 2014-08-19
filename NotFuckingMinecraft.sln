@@ -5,6 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotFuckingMinecraft", "NotF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53C50C50-4771-47B9-A4C0-00BC204219DD}"
 	ProjectSection(SolutionItems) = preProject
+		Credits.txt = Credits.txt
 		Rebracer.xml = Rebracer.xml
 	EndProjectSection
 EndProject

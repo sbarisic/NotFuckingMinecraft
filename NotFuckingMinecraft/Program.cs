@@ -16,7 +16,7 @@ using System.Diagnostics;
 namespace NFM {
 
 	static class Settings {
-		public const string Version = "0.1.0.2";
+		public const string Version = "0.1.0.3";
 
 		public static bool Flatlands = false;
 		public static bool Colored = false;
@@ -65,10 +65,12 @@ namespace NFM {
 			ConsoleWindow = GetConsoleWindow();
 			ShowWindow(ConsoleWindow, SW_HIDE);
 
-			using (Renderer R = new Renderer()) {
-				SWatch.Start();
-				R.Run();
-			}
+			Renderer R = new Renderer();
+			Debug.Indent();
+			SWatch.Start();
+			R.Run();
+			Debug.Unindent();
+			R.Dispose();
 
 			Environment.Exit(0);
 		}
@@ -135,7 +137,7 @@ namespace NFM {
 				new Vector2(0, 1),
 			});
 			ScrQuad.Use(true, false, true, false);
-			ScrQuad.SetTexture(Scr.TEX);
+			ScrQuad.SetTexture(Scr.Color);
 #endif
 
 			Macroblock.GlobalShaderProg = new Prog(
@@ -161,7 +163,6 @@ namespace NFM {
 			Scr.Bind();
 			{
 #endif
-
 				if (Settings.Wireframe)
 					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 				else
@@ -170,8 +171,8 @@ namespace NFM {
 				GL.Clear(CBM);
 				GameWorld.Render();
 
-				GL.CullFace(CullFaceMode.Front);
-				GameWorld.RenderTransparent();
+				/*GL.CullFace(CullFaceMode.Front);
+				GameWorld.RenderTransparent();*/
 				GL.CullFace(CullFaceMode.Back);
 				GameWorld.RenderTransparent();
 #if FRAMEBUFFER

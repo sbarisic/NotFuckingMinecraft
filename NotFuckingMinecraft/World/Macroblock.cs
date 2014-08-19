@@ -112,8 +112,14 @@ namespace NFM {
 					;*/
 		}
 
+		public bool CheckPosition(int X, int Y, int Z) {
+			if ((X < 0 || Y < 0 || Z < 0) || (X > (Size - 1) || Y > (Size - 1) || Z > (Size - 1)))
+				return false;
+			return true;
+		}
+
 		public BlockID GetBlock(int X, int Y, int Z) {
-			if ((X < 0 || Y < 0 || Z < 0) || (X > (Size - 1) || Y > (Size - 1) || Z > (Size - 1))) {
+			if (!CheckPosition(X, Y, Z)) {
 				Vector3 WP = WorldPos(new Vector3(X, Y, Z));
 				return GW.GetBlock(this, (int)WP.X, (int)WP.Y, (int)WP.Z);
 			}
@@ -123,7 +129,7 @@ namespace NFM {
 		}
 
 		public bool SetBlock(int X, int Y, int Z, BlockID B, bool Update = true) {
-			if (Blocks != null) {
+			if (Blocks != null && CheckPosition(X, Y, Z)) {
 				if (Blocks[X, Y, Z] == B)
 					return false;
 				Blocks[X, Y, Z] = B;

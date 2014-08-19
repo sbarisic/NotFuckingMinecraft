@@ -1,0 +1,6 @@
+- Killowatt - Framebuffer code example
+- Tamschi - Example codes
+- Mijyuoon, Elizabwth, G4MBIT, facepunch mates - Testing
+
+- That GLSL testing sandbox website - Snippets of GLSL code
+- Some more, // TODO
