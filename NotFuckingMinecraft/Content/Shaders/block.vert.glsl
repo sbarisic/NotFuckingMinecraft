@@ -47,8 +47,8 @@ void main() {
 	vec3 Pos = Position;
 
 	if (Data.w == WATER) {
-		Pos = Randomize(Position, 0, 0, 0.1 * BLOCK_SIZE * sin(Time * 1.25) * 5);
-		Pos.z += sin(Time * 1.25) / 10 * BLOCK_SIZE - 0.35 * BLOCK_SIZE;
+		Pos = Randomize(Position, 0, 0, 0.1 * BLOCK_SIZE * sin(Time * 100) * 5);
+		Pos.z += sin(Time * 100) / 10 * BLOCK_SIZE - 0.35 * BLOCK_SIZE;
 	}
 
 	gl_Position = u_projection * u_viewrot * u_view * u_modelview * vec4(Pos, 1);
