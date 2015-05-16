@@ -17,17 +17,21 @@ namespace NFM.Entities {
 		Dictionary<Key, bool> Keyboard;
 
 		// TODO: Abstract later
-		[DllImport("user32.dll")]
-		static extern bool SetCursorPos(int X, int Y);
-		static bool SetCursorPos(Point P) {
-			return SetCursorPos(P.X, P.Y);
+		/*[DllImport("user32.dll")]
+		static extern bool SetCursorPos(int X, int Y);*/
+
+		bool SetCursorPos(Point P) {
+			return false;
+			//return SetCursorPos(P.X, P.Y);
 		}
-		[DllImport("user32.dll")]
+
+		/*[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool GetCursorPos(out Point lpPoint);
-		static Point GetCursorPos() {
-			Point R;
-			GetCursorPos(out R);
+		static extern bool GetCursorPos(out Point lpPoint);*/
+
+		Point GetCursorPos() {
+			Point R = new Point();
+			//GetCursorPos(out R);
 			return R;
 		}
 
